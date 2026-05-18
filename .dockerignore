@@ -1,0 +1,9 @@
+node_modules/
+.git/
+venv/
+.venv/
+.env
+*.log
+analyze_data.ipynb
+process_data.ipynb
+export.xml

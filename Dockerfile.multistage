@@ -1,0 +1,39 @@
+### Builder stage: compile wheels with build tools (not carried into final image)
+FROM python:3.10-slim AS builder
+WORKDIR /app
+
+# Installer les outils de compilation nécessaires pour certaines dépendances
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential gcc libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copier uniquement le fichier de dépendances
+COPY src/requirements.txt ./requirements.txt
+
+# Créer un virtualenv et installer les dépendances dedans
+RUN python -m venv /opt/venv \
+    && /opt/venv/bin/pip install --upgrade pip setuptools wheel \
+    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+### Final stage: image minimale contenant uniquement ce qu'il faut pour exécuter l'app
+FROM python:3.10-slim
+WORKDIR /app
+
+# Copier le virtualenv depuis le builder (contient les paquets déjà installés)
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copier seulement le code nécessaire et les assets requis
+# Copier le package applicatif
+COPY src/ /app/src/
+
+# Copier les fichiers de données nécessaires
+RUN mkdir -p /app/data
+COPY data/home.jpg /app/data/home.jpg
+COPY data/workouts_data.csv /app/data/workouts_data.csv
+COPY data/records_data.csv /app/data/records_data.csv
+COPY data/demo.gif /app/data/demo.gif
+
+# Exposer le port et lancer Streamlit
+EXPOSE 8501
+CMD ["streamlit", "run", "src/Home.py"]

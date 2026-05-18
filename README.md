@@ -47,6 +47,79 @@ Run the command `.venv/bin/streamlit run src/Home.py` to start the application, 
   Local URL: http://localhost:8501
 ```
 
+## Docker
+
+### Build the image
+
+From the `PHC` folder, build the Docker image with:
+
+```bash
+docker build -t phc:v1 .
+```
+
+### Run the container
+
+Start the container with:
+
+```bash
+docker run -p 8501:8501 --env-file .env phc:v1
+```
+
+The application will be available at:
+
+```bash
+http://localhost:8501
+```
+
+### Environment variables
+
+The project uses the variables defined in `.sample_env`.
+
+Required variable:
+
+- `OPENAI_API_KEY`
+
+Optional variable:
+
+- `SERPAPI_API_KEY`
+
+### Exposed ports
+
+- Container port: `8501`
+- Local port: `8501`
+
+### Useful commands
+
+List running containers:
+
+```bash
+docker ps
+```
+
+View container logs:
+
+```bash
+docker logs <container_id>
+```
+
+Stop a container:
+
+```bash
+docker stop <container_id>
+```
+
+Remove a stopped container:
+
+```bash
+docker rm <container_id>
+```
+
+Remove an image:
+
+```bash
+docker rmi phc:1.0
+```
+
 ## Demo
 
 ![demo](./data/demo.gif)

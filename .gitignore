@@ -1,3 +1,5 @@
 export.xml
 .env
 .venv
+venv/
+.git/
