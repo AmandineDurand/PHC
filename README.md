@@ -120,6 +120,76 @@ Remove an image:
 docker rmi phc:1.0
 ```
 
+## CI/CD with GitHub Actions
+
+This project uses GitHub Actions to automatically build and publish the Docker image.
+
+### Workflow
+
+The CI pipeline is triggered on:
+
+- push to `main`
+- pull requests targeting `main`
+
+The workflow file is located at:
+
+```text
+.github/workflows/docker-build.yml
+```
+
+### Pipeline steps
+
+The workflow performs the following actions:
+
+1. Checkout the repository
+2. Configure Docker Buildx
+3. Authenticate to Docker Hub
+4. Build the Docker image and push it to Docker Hub (except for pull requests)
+5. Use GitHub Actions cache to speed up builds
+
+### Docker Hub image
+
+The Docker image is automatically published to Docker Hub:
+
+```bash
+docker pull amandinedurand/phc-v1:latest
+```
+
+A SHA-based tag is also generated for each commit:
+
+```bash
+docker pull amandinedurand/phc-v1:<commit-sha>
+```
+
+### GitHub Secrets
+
+The workflow requires the following GitHub repository secrets:
+
+| Secret | Description |
+|---|---|
+| `DOCKER_HUB_USERNAME` | Docker Hub username |
+| `DOCKER_HUB` | Docker Hub access token |
+
+Secrets are configured in:
+
+```text
+GitHub Repository → Settings → Secrets and variables → Actions
+```
+
+### Run the Docker image locally
+
+```bash
+docker pull amandinedurand/phc-v1:latest
+
+docker run -p 8501:8501 --env-file .env amandinedurand/phc-v1:latest
+```
+
+The application will then be available at:
+
+```text
+http://localhost:8501
+```
+
 ## Demo
 
 ![demo](./data/demo.gif)
